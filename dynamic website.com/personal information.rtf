@@ -1,0 +1,208 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2820
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww28300\viewh17700\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs40 \cf0 'use client'\
+\
+import \{ PlusCircle \} from "lucide-react"\
+import \{ useState \} from "react"\
+\
+import \{ Button \} from "@/components/ui/button"\
+import \{\
+  Dialog,\
+  DialogContent,\
+  DialogHeader,\
+  DialogTitle,\
+  DialogTrigger,\
+\} from "@/components/ui/dialog"\
+import \{ Input \} from "@/components/ui/input"\
+import \{ Label \} from "@/components/ui/label"\
+import \{\
+  Table,\
+  TableBody,\
+  TableCell,\
+  TableHead,\
+  TableHeader,\
+  TableRow,\
+\} from "@/components/ui/table"\
+\
+interface Contact \{\
+  id: number\
+  name: string\
+  address: string\
+  email: string\
+  phone: string\
+\}\
+\
+export default function Component() \{\
+  // Initial contacts data\
+  const [contacts, setContacts] = useState<Contact[]>([\
+    \{\
+      id: 1,\
+      name: "John Doe",\
+      address: "123 Main St, City, Country",\
+      email: "john@example.com",\
+      phone: "123-456-7890"\
+    \},\
+    \{\
+      id: 2,\
+      name: "Jane Smith",\
+      address: "456 Oak Ave, Town, Country",\
+      email: "jane@example.com",\
+      phone: "098-765-4321"\
+    \},\
+    // Add more initial contacts as needed\
+  ])\
+\
+  const [editingContact, setEditingContact] = useState<Contact | null>(null)\
+  const [isDialogOpen, setIsDialogOpen] = useState(false)\
+\
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => \{\
+    e.preventDefault()\
+    const formData = new FormData(e.currentTarget)\
+    const newContact = \{\
+      id: editingContact ? editingContact.id : contacts.length + 1,\
+      name: formData.get('name') as string,\
+      address: formData.get('address') as string,\
+      email: formData.get('email') as string,\
+      phone: formData.get('phone') as string,\
+    \}\
+\
+    if (editingContact) \{\
+      setContacts(contacts.map(c => c.id === editingContact.id ? newContact : c))\
+    \} else \{\
+      setContacts([...contacts, newContact])\
+    \}\
+\
+    setIsDialogOpen(false)\
+    setEditingContact(null)\
+    ;(e.target as HTMLFormElement).reset()\
+  \}\
+\
+  const handleEdit = (contact: Contact) => \{\
+    setEditingContact(contact)\
+    setIsDialogOpen(true)\
+  \}\
+\
+  const handleDelete = (id: number) => \{\
+    setContacts(contacts.filter(c => c.id !== id))\
+  \}\
+\
+  return (\
+    <div className="container mx-auto py-10">\
+      <div className="flex items-center justify-between mb-6">\
+        <h1 className="text-3xl font-bold">Address Book</h1>\
+        <Dialog open=\{isDialogOpen\} onOpenChange=\{setIsDialogOpen\}>\
+          <DialogTrigger asChild>\
+            <Button onClick=\{() => setEditingContact(null)\}>\
+              <PlusCircle className="mr-2 h-4 w-4" />\
+              Add Contact\
+            </Button>\
+          </DialogTrigger>\
+          <DialogContent>\
+            <DialogHeader>\
+              <DialogTitle>\{editingContact ? 'Edit Contact' : 'Add New Contact'\}</DialogTitle>\
+            </DialogHeader>\
+            <form onSubmit=\{handleSubmit\} className="space-y-4">\
+              <div className="space-y-2">\
+                <Label htmlFor="name">Name</Label>\
+                <Input\
+                  id="name"\
+                  name="name"\
+                  defaultValue=\{editingContact?.name\}\
+                  required\
+                />\
+              </div>\
+              <div className="space-y-2">\
+                <Label htmlFor="address">Address</Label>\
+                <Input\
+                  id="address"\
+                  name="address"\
+                  defaultValue=\{editingContact?.address\}\
+                  required\
+                />\
+              </div>\
+              <div className="space-y-2">\
+                <Label htmlFor="email">Email</Label>\
+                <Input\
+                  id="email"\
+                  name="email"\
+                  type="email"\
+                  defaultValue=\{editingContact?.email\}\
+                  required\
+                />\
+              </div>\
+              <div className="space-y-2">\
+                <Label htmlFor="phone">Phone</Label>\
+                <Input\
+                  id="phone"\
+                  name="phone"\
+                  type="tel"\
+                  defaultValue=\{editingContact?.phone\}\
+                  required\
+                />\
+              </div>\
+              <div className="flex justify-end space-x-2">\
+                <Button\
+                  type="button"\
+                  variant="outline"\
+                  onClick=\{() => setIsDialogOpen(false)\}\
+                >\
+                  Cancel\
+                </Button>\
+                <Button type="submit">\
+                  \{editingContact ? 'Save Changes' : 'Add Contact'\}\
+                </Button>\
+              </div>\
+            </form>\
+          </DialogContent>\
+        </Dialog>\
+      </div>\
+\
+      <div className="border rounded-lg">\
+        <Table>\
+          <TableHeader>\
+            <TableRow>\
+              <TableHead>Name</TableHead>\
+              <TableHead>Address</TableHead>\
+              <TableHead>Email</TableHead>\
+              <TableHead>Phone</TableHead>\
+              <TableHead className="text-right">Actions</TableHead>\
+            </TableRow>\
+          </TableHeader>\
+          <TableBody>\
+            \{contacts.map((contact) => (\
+              <TableRow key=\{contact.id\}>\
+                <TableCell>\{contact.name\}</TableCell>\
+                <TableCell>\{contact.address\}</TableCell>\
+                <TableCell>\{contact.email\}</TableCell>\
+                <TableCell>\{contact.phone\}</TableCell>\
+                <TableCell className="text-right">\
+                  <div className="flex justify-end space-x-2">\
+                    <Button\
+                      variant="outline"\
+                      size="sm"\
+                      onClick=\{() => handleEdit(contact)\}\
+                    >\
+                      Edit\
+                    </Button>\
+                    <Button\
+                      variant="destructive"\
+                      size="sm"\
+                      onClick=\{() => handleDelete(contact.id)\}\
+                    >\
+                      Delete\
+                    </Button>\
+                  </div>\
+                </TableCell>\
+              </TableRow>\
+            ))\}\
+          </TableBody>\
+        </Table>\
+      </div>\
+    </div>\
+  )\
+\}}
